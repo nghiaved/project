@@ -199,14 +199,14 @@ export default function Sidebar() {
                 </li>
 
                 <li className="nav-item">
-                    <NavLink className="nav-link collapsed" to="pages-register">
+                    <NavLink className="nav-link collapsed" to={path.REGISTER}>
                         <i className="bi bi-card-list"></i>
                         <span>Register</span>
                     </NavLink>
                 </li>
 
                 <li className="nav-item">
-                    <NavLink className="nav-link collapsed" to="pages-login">
+                    <NavLink className="nav-link collapsed" to={path.LOGIN}>
                         <i className="bi bi-box-arrow-in-right"></i>
                         <span>Login</span>
                     </NavLink>

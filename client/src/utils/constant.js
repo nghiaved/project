@@ -33,4 +33,6 @@ export const path = {
     ADMIN_ICONS_BOOTSTRAP: '/admin/icons/bootstrap',
     ADMIN_ICONS_BOXICONS: '/admin/icons/boxicons',
     ADMIN_ICONS_REMIX: '/admin/icons/remix',
+
+    ADMIN_PROFILE: '/admin/profile',
 }

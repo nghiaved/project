@@ -1,12 +1,13 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { path } from '../utils'
+import { path, alertMessage } from '../utils'
 import { apiUsersLogin } from '../services'
 
 export default function LoginPage() {
     const { register, handleSubmit } = useForm()
     const navigate = useNavigate()
+    const toastRef = useRef()
 
     const onSubmit = async (data) => {
         try {
@@ -20,27 +21,7 @@ export default function LoginPage() {
                 }
             }
         } catch (e) {
-            toast(e.data.message)
-        }
-    }
-
-    function toast(message) {
-        const main = document.getElementById('toast')
-        if (main) {
-            const toast = document.createElement('div')
-
-            setTimeout(function () {
-                main.removeChild(toast)
-            }, 3000)
-
-            toast.innerHTML = `
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="bi bi-exclamation-octagon me-1"></i>
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            `
-            main.appendChild(toast)
+            alertMessage(toastRef.current, e.data.message, false)
         }
     }
 
@@ -101,7 +82,7 @@ export default function LoginPage() {
                                             </div>
                                         </form>
 
-                                        <div className='mt-2' id="toast"></div>
+                                        <div ref={toastRef} className='mt-2' ></div>
 
                                     </div>
                                 </div>

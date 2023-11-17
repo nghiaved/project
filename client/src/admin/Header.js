@@ -198,7 +198,7 @@ export default function Header() {
                             </li>
 
                             <li>
-                                <Link className="dropdown-item d-flex align-items-center" to="users-profile">
+                                <Link className="dropdown-item d-flex align-items-center" to={path.ADMIN_PROFILE}>
                                     <i className="bi bi-person"></i>
                                     <span>My Profile</span>
                                 </Link>
@@ -208,7 +208,7 @@ export default function Header() {
                             </li>
 
                             <li>
-                                <Link className="dropdown-item d-flex align-items-center" to="users-profile">
+                                <Link className="dropdown-item d-flex align-items-center" to={path.ADMIN_PROFILE}>
                                     <i className="bi bi-gear"></i>
                                     <span>Account Settings</span>
                                 </Link>

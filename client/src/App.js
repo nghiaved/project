@@ -37,6 +37,8 @@ import Bootstrap from './admin/icons/Bootstrap'
 import Boxicons from './admin/icons/Boxicons'
 import Remix from './admin/icons/Remix'
 
+import Profile from './admin/pages/Profile'
+
 export default function App() {
     return (
         <Routes>
@@ -74,8 +76,10 @@ export default function App() {
                 <Route path={path.ADMIN_CHARTS_CHARTS} element={<Charts />} />
 
                 <Route path={path.ADMIN_ICONS_BOOTSTRAP} element={<Bootstrap />} />
-                <Route path={path.ADMIN_ICONS_BOXICONS} element={<Boxicons />} />Chart
+                <Route path={path.ADMIN_ICONS_BOXICONS} element={<Boxicons />} />
                 <Route path={path.ADMIN_ICONS_REMIX} element={<Remix />} />
+
+                <Route path={path.ADMIN_PROFILE} element={<Profile />} />
 
             </Route>
 
