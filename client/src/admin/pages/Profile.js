@@ -1,17 +1,38 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
+import FileBase64 from 'react-file-base64'
 import { jwtDecode } from 'jwt-decode'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { path, alertMessage } from '../../utils'
-import { apiUsersDelete, apiUsersChangePassword } from '../../services'
+import { apiUsersDeleteAccount, apiUsersChangePassword, apiUsersUpdateInfo } from '../../services'
 
 export default function Profile() {
-    const { register, handleSubmit } = useForm()
+    const [image, setImage] = useState()
+    const { register: registerUpdateInfo, handleSubmit: handleSubmitUpdateInfo } = useForm()
+    const { register: registerChangePassword, handleSubmit: handleSubmitChangePassword } = useForm()
+    const { register: registerDeleteAccount, handleSubmit: handleSubmitDeleteAccount } = useForm()
     const token = JSON.parse(window.localStorage.getItem('token'))
     const userInfo = jwtDecode(token)
     const navigate = useNavigate()
-    const toastDeleteRef = useRef()
+    const toastUpdateInfoRef = useRef()
     const toastChangePasswordRef = useRef()
+    const toastDeleteAccountRef = useRef()
+
+    const handleUpdateInfo = async (data) => {
+        try {
+            image ? data.image = image : data.image = userInfo.image
+            const res = await apiUsersUpdateInfo({ ...data, id: userInfo.id })
+            if (res.status === 200) {
+                alertMessage(toastUpdateInfoRef.current, res.data.message, true)
+                window.localStorage.setItem('token', JSON.stringify(res.data.token))
+                setTimeout(function () {
+                    navigate(window.location.pathname)
+                }, 3000)
+            }
+        } catch (e) {
+            alertMessage(toastUpdateInfoRef.current, e.data.message, false)
+        }
+    }
 
     const handleChangePassword = async (data) => {
         try {
@@ -26,13 +47,13 @@ export default function Profile() {
 
     const handleDeleteAccount = async (data) => {
         try {
-            const res = await apiUsersDelete({ ...data, id: userInfo.id })
+            const res = await apiUsersDeleteAccount({ ...data, id: userInfo.id })
             if (res.status === 200) {
                 window.localStorage.removeItem('token')
                 navigate(0)
             }
         } catch (e) {
-            alertMessage(toastDeleteRef.current, e.data.message, false)
+            alertMessage(toastDeleteAccountRef.current, e.data.message, false)
         }
     }
 
@@ -57,7 +78,7 @@ export default function Profile() {
                         <div className="card">
                             <div className="card-body profile-card pt-4 d-flex flex-column align-items-center">
 
-                                <img src={userInfo.image ? userInfo.image : "/img/profile-img.jpg"} alt="Profile" className="rounded-circle" />
+                                <img src={userInfo.image ? userInfo.image : "/img/no-avatar.png"} alt="Profile" className="rounded-circle" />
                                 <h2>{userInfo.firstName + ' ' + userInfo.lastName}</h2>
                                 <h3>@{userInfo.username}</h3>
 
@@ -128,14 +149,24 @@ export default function Profile() {
 
                                     <div className="tab-pane fade profile-edit pt-3" id="profile-edit">
 
-                                        <form>
+                                        <form onSubmit={handleSubmitUpdateInfo(handleUpdateInfo)}>
                                             <div className="row mb-3">
                                                 <label htmlFor="profileImage" className="col-md-4 col-lg-3 col-form-label">Profile Image</label>
                                                 <div className="col-md-8 col-lg-9">
-                                                    <img src={userInfo.image ? userInfo.image : "/img/profile-img.jpg"} alt="Profile" />
+                                                    {image
+                                                        ? <img className='border' src={image} alt="Profile" />
+                                                        : <img className='border' src={userInfo.image ? userInfo.image : "/img/no-avatar.png"} alt="Profile" />}
                                                     <div className="pt-2">
-                                                        <Link href="#" className="btn btn-primary btn-sm" title="Upload new profile image"><i className="bi bi-upload"></i></Link>
-                                                        <Link href="#" className="btn btn-danger btn-sm" title="Remove my profile image"><i className="bi bi-trash"></i></Link>
+                                                        <label>
+                                                            <FileBase64
+                                                                multiple={false}
+                                                                onDone={({ base64 }) => {
+                                                                    setImage(base64)
+                                                                }}
+                                                            />
+                                                            <i className="btn btn-primary btn-sm bi bi-upload"></i>
+                                                        </label>
+                                                        <i onClick={() => setImage()} className="mx-2 btn btn-danger btn-sm bi bi-trash"></i>
                                                     </div>
                                                 </div>
                                             </div>
@@ -143,59 +174,67 @@ export default function Profile() {
                                             <div className="row mb-3">
                                                 <label htmlFor="firstName" className="col-md-4 col-lg-3 col-form-label">First Name</label>
                                                 <div className="col-md-8 col-lg-9">
-                                                    <input name="fullName" type="text" className="form-control" id="firstName" defaultValue={userInfo.firstName} />
+                                                    <input {...registerUpdateInfo('firstName')} required maxLength={30} autoComplete='off'
+                                                        type="text" className="form-control" id="firstName" defaultValue={userInfo.firstName} />
                                                 </div>
                                             </div>
 
                                             <div className="row mb-3">
                                                 <label htmlFor="lastName" className="col-md-4 col-lg-3 col-form-label">Last Name</label>
                                                 <div className="col-md-8 col-lg-9">
-                                                    <input name="fullName" type="text" className="form-control" id="lastName" defaultValue={userInfo.lastName} />
+                                                    <input {...registerUpdateInfo('lastName')} required maxLength={30} autoComplete='off'
+                                                        type="text" className="form-control" id="lastName" defaultValue={userInfo.lastName} />
                                                 </div>
                                             </div>
 
                                             <div className="row mb-3">
                                                 <label htmlFor="about" className="col-md-4 col-lg-3 col-form-label">About</label>
                                                 <div className="col-md-8 col-lg-9">
-                                                    <textarea name="about" className="form-control" id="about" style={{ height: '100px' }} defaultValue={userInfo.about && userInfo.about}></textarea>
+                                                    <textarea  {...registerUpdateInfo('about')} maxLength={255} autoComplete='off'
+                                                        className="form-control" id="about" style={{ height: '100px' }} defaultValue={userInfo.about && userInfo.about}></textarea>
                                                 </div>
                                             </div>
 
                                             <div className="row mb-3">
                                                 <label htmlFor="Address" className="col-md-4 col-lg-3 col-form-label">Address</label>
                                                 <div className="col-md-8 col-lg-9">
-                                                    <input name="address" type="text" className="form-control" id="Address" defaultValue={userInfo.address && userInfo.address} />
+                                                    <input {...registerUpdateInfo('address')} maxLength={100} autoComplete='off'
+                                                        type="text" className="form-control" id="Address" defaultValue={userInfo.address && userInfo.address} />
                                                 </div>
                                             </div>
 
                                             <div className="row mb-3">
                                                 <label htmlFor="Phone" className="col-md-4 col-lg-3 col-form-label">Phone</label>
                                                 <div className="col-md-8 col-lg-9">
-                                                    <input name="phone" type="text" className="form-control" id="Phone" defaultValue={userInfo.phone && userInfo.phone} />
+                                                    <input {...registerUpdateInfo('phone')} maxLength={20} autoComplete='off'
+                                                        type="text" className="form-control" id="Phone" defaultValue={userInfo.phone && userInfo.phone} />
                                                 </div>
                                             </div>
 
                                             <div className="row mb-3">
                                                 <label htmlFor="Email" className="col-md-4 col-lg-3 col-form-label">Email</label>
                                                 <div className="col-md-8 col-lg-9">
-                                                    <input name="email" type="email" className="form-control" id="Email" defaultValue={userInfo.email && userInfo.email} />
+                                                    <input {...registerUpdateInfo('email')} maxLength={50} autoComplete='off'
+                                                        type="email" className="form-control" id="Email" defaultValue={userInfo.email && userInfo.email} />
                                                 </div>
                                             </div>
 
                                             <div className="text-center">
                                                 <button type="submit" className="btn btn-primary">Save Changes</button>
                                             </div>
+
+                                            <div ref={toastUpdateInfoRef} className='mt-2'></div>
                                         </form>
 
                                     </div>
 
                                     <div className="tab-pane fade pt-3" id="profile-change-password">
-                                        <form onSubmit={handleSubmit(handleChangePassword)}>
+                                        <form onSubmit={handleSubmitChangePassword(handleChangePassword)}>
 
                                             <div className="row mb-3">
                                                 <label htmlFor="currentPassword" className="col-md-4 col-lg-3 col-form-label">Current Password</label>
                                                 <div className="col-md-8 col-lg-9">
-                                                    <input {...register('oldPassword')} required maxLength={30} minLength={6} autoComplete='off'
+                                                    <input {...registerChangePassword('oldPassword')} required maxLength={30} minLength={6} autoComplete='off'
                                                         type="password" className="form-control" id="currentPassword" />
                                                 </div>
                                             </div>
@@ -203,7 +242,7 @@ export default function Profile() {
                                             <div className="row mb-3">
                                                 <label htmlFor="newPassword" className="col-md-4 col-lg-3 col-form-label">New Password</label>
                                                 <div className="col-md-8 col-lg-9">
-                                                    <input {...register('newPassword')} required maxLength={30} minLength={6} autoComplete='off'
+                                                    <input {...registerChangePassword('newPassword')} required maxLength={30} minLength={6} autoComplete='off'
                                                         type="password" className="form-control" id="newPassword" />
                                                 </div>
                                             </div>
@@ -211,7 +250,7 @@ export default function Profile() {
                                             <div className="row mb-3">
                                                 <label htmlFor="renewPassword" className="col-md-4 col-lg-3 col-form-label">Re-enter New Password</label>
                                                 <div className="col-md-8 col-lg-9">
-                                                    <input {...register('renewPassword')} required maxLength={30} minLength={6} autoComplete='off'
+                                                    <input {...registerChangePassword('renewPassword')} required maxLength={30} minLength={6} autoComplete='off'
                                                         type="password" className="form-control" id="renewPassword" />
                                                 </div>
                                             </div>
@@ -226,12 +265,12 @@ export default function Profile() {
                                     </div>
 
                                     <div className="tab-pane fade pt-3" id="profile-delete-account">
-                                        <form onSubmit={handleSubmit(handleDeleteAccount)}>
+                                        <form onSubmit={handleSubmitDeleteAccount(handleDeleteAccount)}>
 
                                             <div className="row mb-3">
                                                 <label htmlFor="deleteUsername" className="col-md-4 col-lg-3 col-form-label">Username</label>
                                                 <div className="col-md-8 col-lg-9">
-                                                    <input {...register('username')} required maxLength={30} minLength={6} autoComplete='off'
+                                                    <input {...registerDeleteAccount('username')} required maxLength={30} minLength={6} autoComplete='off'
                                                         type="text" className="form-control" id="deleteUsername" />
                                                 </div>
                                             </div>
@@ -239,7 +278,7 @@ export default function Profile() {
                                             <div className="row mb-3">
                                                 <label htmlFor="deletePassword" className="col-md-4 col-lg-3 col-form-label">Password</label>
                                                 <div className="col-md-8 col-lg-9">
-                                                    <input {...register('password')} required maxLength={30} minLength={6} autoComplete='off'
+                                                    <input {...registerDeleteAccount('password')} required maxLength={30} minLength={6} autoComplete='off'
                                                         type="password" className="form-control" id="deletePassword" />
                                                 </div>
                                             </div>
@@ -248,7 +287,7 @@ export default function Profile() {
                                                 <button type="submit" className="btn btn-danger">Delete Account</button>
                                             </div>
 
-                                            <div ref={toastDeleteRef} className='mt-2'></div>
+                                            <div ref={toastDeleteAccountRef} className='mt-2'></div>
                                         </form>
 
                                     </div>

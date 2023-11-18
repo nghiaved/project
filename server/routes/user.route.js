@@ -6,8 +6,8 @@ const router = express.Router()
 router.post('/register', userController.register)
 router.post('/login', userController.login)
 router.get('/list', userController.list)
-router.put('/update', userController.update)
-router.delete('/delete', userController.delete)
+router.put('/update-info', userController.updateInfo)
+router.delete('/delete-account', userController.deleteAccount)
 router.patch('/change-password', userController.changePassword)
 
 module.exports = router

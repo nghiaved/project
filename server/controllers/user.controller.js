@@ -72,11 +72,15 @@ exports.list = (req, res) => {
     )
 }
 
-exports.update = (req, res) => {
+exports.updateInfo = (req, res) => {
     const id = req.query.id
+    const { firstName, lastName, about, address, phone, email, image } = req.body
 
     if (!id)
         return res.status(400).json({ message: `Please complete all information` })
+
+    if (!firstName || !lastName)
+        return res.status(400).json({ message: `First and last name is required` })
 
     db.query(
         'SELECT id FROM users WHERE id = ?', [id],
@@ -87,23 +91,29 @@ exports.update = (req, res) => {
             if (results.length === 0)
                 return res.status(400).json({ message: `User's not existed` })
 
-            if (req.body.password) {
-                const hashedPassword = await bcrypt.hash(req.body.password, 8)
-                req.body.password = hashedPassword
-            }
-
-            db.query('UPDATE users SET ? WHERE id = ?', [{ ...req.body }, id],
+            db.query('UPDATE users SET ? WHERE id = ?', [{ firstName, lastName, about, address, phone, email, image }, id],
                 (error, results) => {
                     if (error)
                         return res.status(400).json(error)
-                    else
-                        return res.status(200).json({ message: 'User updated successfully' })
+
+                    db.query(
+                        'SELECT * FROM users WHERE id = ?', [id],
+                        async (error, results) => {
+                            if (error)
+                                return res.status(400).json(error)
+
+                            const userInfo = results[0]
+                            delete userInfo.password
+                            const token = jwt.sign({ ...userInfo }, process.env.SECRET_KEY)
+                            return res.status(200).json({ token, message: 'User updated successfully' })
+                        }
+                    )
                 })
         }
     )
 }
 
-exports.delete = (req, res) => {
+exports.deleteAccount = (req, res) => {
     const { id, username, password } = req.query
 
     if (!id || !username || !password)
@@ -168,7 +178,7 @@ exports.changePassword = (req, res) => {
                     if (error)
                         return res.status(400).json(error)
                     else
-                        return res.status(200).json({ message: 'User updated successfully' })
+                        return res.status(200).json({ message: 'Changed password successfully' })
                 })
         }
     )

@@ -30,6 +30,10 @@ h6 {
     font-family: "Nunito", sans-serif;
 }
 
+input[type="file"] {
+    display: none;
+}
+
 /*--------------------------------------------------------------
   # Main
   --------------------------------------------------------------*/
@@ -487,7 +491,9 @@ h6 {
 }
 
 .header-nav .nav-profile img {
-    max-height: 36px;
+    width: 36px;
+    height: 36px;
+    object-fit: cover;
 }
 
 .header-nav .nav-profile span {
@@ -1007,7 +1013,9 @@ h6 {
   # Profie Page
   --------------------------------------------------------------*/
 .profile .profile-card img {
-    max-width: 120px;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
 }
 
 .profile .profile-card h2 {
@@ -1054,7 +1062,9 @@ h6 {
 }
 
 .profile .profile-edit img {
-    max-width: 120px;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
 }
 
 /*--------------------------------------------------------------
