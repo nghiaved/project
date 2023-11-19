@@ -1,13 +1,16 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { path } from './utils'
+
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+import Error from './pages/Error'
 
 import Admin from './admin'
 
 import Dashboard from './admin/pages/Dashboard'
+
 import Accordion from './admin/components/Accordion'
 import Alert from './admin/components/Alerts'
 import Badges from './admin/components/Badges'
@@ -38,6 +41,9 @@ import Boxicons from './admin/icons/Boxicons'
 import Remix from './admin/icons/Remix'
 
 import Profile from './admin/pages/Profile'
+import FAQ from './admin/pages/FAQ'
+import Contact from './admin/pages/Contact'
+import Blank from './admin/pages/Blank'
 
 export default function App() {
     return (
@@ -45,6 +51,7 @@ export default function App() {
             <Route path={path.HOME} element={<HomePage />} />
             <Route path={path.LOGIN} element={<LoginPage />} />
             <Route path={path.REGISTER} element={<RegisterPage />} />
+            <Route path={path.ERROR} element={<Error />} />
 
             <Route path={path.ADMIN} element={JSON.parse(window.localStorage.getItem('token')) ? <Admin /> : <LoginPage />}>
                 <Route index element={<Dashboard />} />
@@ -71,7 +78,6 @@ export default function App() {
                 <Route path={path.ADMIN_TABLES_DATA} element={<Data />} />
                 <Route path={path.ADMIN_TABLES_GENERAL} element={<General />} />
 
-
                 <Route path={path.ADMIN_CHARTS_APEXCHARTS} element={<Apexcharts />} />
                 <Route path={path.ADMIN_CHARTS_CHARTS} element={<Charts />} />
 
@@ -80,7 +86,9 @@ export default function App() {
                 <Route path={path.ADMIN_ICONS_REMIX} element={<Remix />} />
 
                 <Route path={path.ADMIN_PROFILE} element={<Profile />} />
-
+                <Route path={path.ADMIN_FAQ} element={<FAQ />} />
+                <Route path={path.ADMIN_CONTACT} element={<Contact />} />
+                <Route path={path.ADMIN_BLANK} element={<Blank />} />
             </Route>
 
         </Routes>

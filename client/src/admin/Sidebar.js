@@ -178,21 +178,21 @@ export default function Sidebar() {
                 <li className="nav-heading">Pages</li>
 
                 <li className="nav-item">
-                    <NavLink className="nav-link collapsed" to="users-profile">
+                    <NavLink className="nav-link collapsed" to={path.ADMIN_PROFILE}>
                         <i className="bi bi-person"></i>
                         <span>Profile</span>
                     </NavLink>
                 </li>
 
                 <li className="nav-item">
-                    <NavLink className="nav-link collapsed" to="pages-faq">
+                    <NavLink className="nav-link collapsed" to={path.ADMIN_FAQ}>
                         <i className="bi bi-question-circle"></i>
                         <span>F.A.Q</span>
                     </NavLink>
                 </li>
 
                 <li className="nav-item">
-                    <NavLink className="nav-link collapsed" to="pages-contact">
+                    <NavLink className="nav-link collapsed" to={path.ADMIN_CONTACT}>
                         <i className="bi bi-envelope"></i>
                         <span>Contact</span>
                     </NavLink>
@@ -213,14 +213,14 @@ export default function Sidebar() {
                 </li>
 
                 <li className="nav-item">
-                    <NavLink className="nav-link collapsed" to="pages-error-404">
+                    <NavLink className="nav-link collapsed" to={path.ERROR}>
                         <i className="bi bi-dash-circle"></i>
                         <span>Error 404</span>
                     </NavLink>
                 </li>
 
                 <li className="nav-item">
-                    <NavLink className="nav-link collapsed" to="pages-blank">
+                    <NavLink className="nav-link collapsed" to={path.ADMIN_BLANK}>
                         <i className="bi bi-file-earmark"></i>
                         <span>Blank</span>
                     </NavLink>

@@ -2,6 +2,7 @@ export const path = {
     HOME: '/',
     LOGIN: '/login',
     REGISTER: '/register',
+    ERROR: '/error',
 
     ADMIN: '/admin',
 
@@ -35,4 +36,7 @@ export const path = {
     ADMIN_ICONS_REMIX: '/admin/icons/remix',
 
     ADMIN_PROFILE: '/admin/profile',
+    ADMIN_FAQ: '/admin/faq',
+    ADMIN_CONTACT: '/admin/contact',
+    ADMIN_BLANK: '/admin/blank',
 }
