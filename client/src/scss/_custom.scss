@@ -407,12 +407,13 @@ input[type="file"] {
     color: #012970;
 }
 
+.header .search-group,
 .header .search-bar {
     min-width: 360px;
     padding: 0 20px;
 }
 
-@media (max-width: 991px) {
+@media (max-width: 767px) {
     .header .search-bar {
         position: fixed;
         top: 50px;

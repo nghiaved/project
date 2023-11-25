@@ -2,6 +2,7 @@ import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { jwtDecode } from 'jwt-decode'
 import { path } from '../utils'
+import SearchUser from './SearchUser'
 
 export default function Header() {
     const token = JSON.parse(window.localStorage.getItem('token'))
@@ -24,17 +25,12 @@ export default function Header() {
                 <i className="bi bi-list toggle-sidebar-btn"></i>
             </div>
 
-            <div className="search-bar">
-                <form className="search-form d-flex align-items-center" method="POST" action="#">
-                    <input type="text" name="query" placeholder="Search" title="Enter search keyword" />
-                    <button type="submit" title="Search"><i className="bi bi-search"></i></button>
-                </form>
-            </div>
+            <SearchUser userId={userInfo.id} />
 
             <nav className="header-nav ms-auto">
                 <ul className="d-flex align-items-center">
 
-                    <li className="nav-item d-block d-lg-none">
+                    <li className="nav-item d-block d-md-none">
                         <Link className="nav-link nav-icon search-bar-toggle " to="#search">
                             <i className="bi bi-search"></i>
                         </Link>

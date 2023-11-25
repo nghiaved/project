@@ -34,7 +34,7 @@ export default function Header() {
             <nav className="header-nav ms-auto">
                 <ul className="d-flex align-items-center">
 
-                    <li className="nav-item d-block d-lg-none">
+                    <li className="nav-item d-block d-md-none">
                         <Link className="nav-link nav-icon search-bar-toggle " to="#search">
                             <i className="bi bi-search"></i>
                         </Link>

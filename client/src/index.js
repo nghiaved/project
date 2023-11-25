@@ -8,7 +8,7 @@ import 'remixicon/fonts/remixicon.css'
 import 'bootstrap-icons/font/bootstrap-icons.min.css'
 import 'react-quill/dist/quill.snow.css'
 import 'react-quill/dist/quill.bubble.css'
-import './styles/css/style.css'
+import './scss/index.scss'
 import App from './App'
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(

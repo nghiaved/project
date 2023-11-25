@@ -14,3 +14,6 @@ export const apiUsersChangePassword = data =>
 
 export const apiUsersUpdateInfo = data =>
     axiosClient.put(`/api/users/update-info?id=${data.id}`, data)
+
+export const apiUsersList = searchValue =>
+    axiosClient.get(`/api/users/list?search=${searchValue}`)

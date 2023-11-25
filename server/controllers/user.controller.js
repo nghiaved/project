@@ -58,8 +58,13 @@ exports.login = (req, res) => {
 }
 
 exports.list = (req, res) => {
+    const search = req.query.search
+    if (!search)
+        return res.status(400).json({ message: `Please complete all information` })
+
     db.query(
-        'SELECT username, firstName, lastName FROM users',
+        "SELECT id, username, firstName, lastName, image FROM users WHERE firstName LIKE ? OR lastName LIKE ? OR username LIKE ?",
+        [`%${search}%`, `%${search}%`, `%${search}%`],
         async (error, results) => {
             if (error)
                 return res.status(400).json(error)
