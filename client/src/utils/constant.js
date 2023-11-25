@@ -1,8 +1,12 @@
 export const path = {
     HOME: '/',
+
+    PROFILE: '/profile',
+    FAQ: '/faq',
+
     LOGIN: '/login',
     REGISTER: '/register',
-    ERROR: '/error',
+    ERROR: '*',
 
     ADMIN: '/admin',
 

@@ -2,11 +2,17 @@ import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { path } from './utils'
 
+//App route
+import Home from './pages'
+
 import HomePage from './pages/HomePage'
+import Profile from './pages/Profile'
+import FAQ from './pages/FAQ'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import Error from './pages/Error'
 
+//Admin route
 import Admin from './admin'
 
 import Dashboard from './admin/pages/Dashboard'
@@ -40,15 +46,20 @@ import Bootstrap from './admin/icons/Bootstrap'
 import Boxicons from './admin/icons/Boxicons'
 import Remix from './admin/icons/Remix'
 
-import Profile from './admin/pages/Profile'
-import FAQ from './admin/pages/FAQ'
-import Contact from './admin/pages/Contact'
-import Blank from './admin/pages/Blank'
+import AdminProfile from './admin/pages/Profile'
+import AdminFAQ from './admin/pages/FAQ'
+import AdminContact from './admin/pages/Contact'
+import AdminBlank from './admin/pages/Blank'
 
 export default function App() {
     return (
         <Routes>
-            <Route path={path.HOME} element={<HomePage />} />
+            <Route path={path.HOME} element={JSON.parse(window.localStorage.getItem('token')) ? <Home /> : <LoginPage />} >
+                <Route index element={<HomePage />} />
+                <Route path={path.PROFILE} element={<Profile />} />
+                <Route path={path.FAQ} element={<FAQ />} />
+            </Route>
+
             <Route path={path.LOGIN} element={<LoginPage />} />
             <Route path={path.REGISTER} element={<RegisterPage />} />
             <Route path={path.ERROR} element={<Error />} />
@@ -85,10 +96,10 @@ export default function App() {
                 <Route path={path.ADMIN_ICONS_BOXICONS} element={<Boxicons />} />
                 <Route path={path.ADMIN_ICONS_REMIX} element={<Remix />} />
 
-                <Route path={path.ADMIN_PROFILE} element={<Profile />} />
-                <Route path={path.ADMIN_FAQ} element={<FAQ />} />
-                <Route path={path.ADMIN_CONTACT} element={<Contact />} />
-                <Route path={path.ADMIN_BLANK} element={<Blank />} />
+                <Route path={path.ADMIN_PROFILE} element={<AdminProfile />} />
+                <Route path={path.ADMIN_FAQ} element={<AdminFAQ />} />
+                <Route path={path.ADMIN_CONTACT} element={<AdminContact />} />
+                <Route path={path.ADMIN_BLANK} element={<AdminBlank />} />
             </Route>
 
         </Routes>

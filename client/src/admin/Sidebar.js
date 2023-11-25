@@ -1,5 +1,5 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, Link } from 'react-router-dom'
 import { path } from '../utils'
 
 export default function Sidebar() {
@@ -9,16 +9,9 @@ export default function Sidebar() {
             <ul className="sidebar-nav" id="sidebar-nav">
 
                 <li className="nav-item">
-                    <NavLink className="nav-link " to="/admin">
-                        <i className="bi bi-grid"></i>
-                        <span>Dashboard</span>
-                    </NavLink>
-                </li>
-
-                <li className="nav-item">
-                    <NavLink className="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" to="/admin">
+                    <Link className="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" to="/admin">
                         <i className="bi bi-menu-button-wide"></i><span>Components</span><i className="bi bi-chevron-down ms-auto"></i>
-                    </NavLink>
+                    </Link>
                     <ul id="components-nav" className="nav-content collapse " data-bs-parent="#sidebar-nav">
                         <li>
                             <NavLink to={path.ADMIN_COMPONENTS_ALERTS}>
@@ -89,9 +82,9 @@ export default function Sidebar() {
                 </li>
 
                 <li className="nav-item">
-                    <NavLink className="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" to="/admin">
+                    <Link className="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" to="/admin">
                         <i className="bi bi-journal-text"></i><span>Forms</span><i className="bi bi-chevron-down ms-auto"></i>
-                    </NavLink>
+                    </Link>
                     <ul id="forms-nav" className="nav-content collapse " data-bs-parent="#sidebar-nav">
                         <li>
                             <NavLink to={path.ADMIN_FORMS_ELEMENTS}>
@@ -104,9 +97,9 @@ export default function Sidebar() {
                             </NavLink>
                         </li>
                         <li>
-                            <a href={path.ADMIN_FORMS_EDITORS}>
+                            <NavLink to={path.ADMIN_FORMS_EDITORS}>
                                 <i className="bi bi-circle"></i><span>Form Editors</span>
-                            </a>
+                            </NavLink>
                         </li>
                         <li>
                             <NavLink to={path.ADMIN_FORMS_VALIDATION}>
@@ -117,9 +110,9 @@ export default function Sidebar() {
                 </li>
 
                 <li className="nav-item">
-                    <NavLink className="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" to="/admin">
+                    <Link className="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" to="/admin">
                         <i className="bi bi-layout-text-window-reverse"></i><span>Tables</span><i className="bi bi-chevron-down ms-auto"></i>
-                    </NavLink>
+                    </Link>
                     <ul id="tables-nav" className="nav-content collapse " data-bs-parent="#sidebar-nav">
                         <li>
                             <NavLink to={path.ADMIN_TABLES_GENERAL}>
@@ -135,9 +128,9 @@ export default function Sidebar() {
                 </li>
 
                 <li className="nav-item">
-                    <NavLink className="nav-link collapsed" data-bs-target="#charts-nav" data-bs-toggle="collapse" to="/admin">
+                    <Link className="nav-link collapsed" data-bs-target="#charts-nav" data-bs-toggle="collapse" to="/admin">
                         <i className="bi bi-bar-chart"></i><span>Charts</span><i className="bi bi-chevron-down ms-auto"></i>
-                    </NavLink>
+                    </Link>
                     <ul id="charts-nav" className="nav-content collapse " data-bs-parent="#sidebar-nav">
                         <li>
                             <NavLink to={path.ADMIN_CHARTS_CHARTS}>
@@ -153,9 +146,9 @@ export default function Sidebar() {
                 </li>
 
                 <li className="nav-item">
-                    <NavLink className="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" to="/admin">
+                    <Link className="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" to="/admin">
                         <i className="bi bi-gem"></i><span>Icons</span><i className="bi bi-chevron-down ms-auto"></i>
-                    </NavLink>
+                    </Link>
                     <ul id="icons-nav" className="nav-content collapse " data-bs-parent="#sidebar-nav">
                         <li>
                             <NavLink to={path.ADMIN_ICONS_BOOTSTRAP}>

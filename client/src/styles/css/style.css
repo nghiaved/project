@@ -721,12 +721,14 @@ input[type="file"] {
     color: #899bbd;
 }
 
-.sidebar-nav .nav-link:hover {
+.sidebar-nav .nav-link:hover,
+.sidebar-nav .nav-link.active {
     color: #4154f1;
     background: #f6f9ff;
 }
 
-.sidebar-nav .nav-link:hover i {
+.sidebar-nav .nav-link:hover i,
+.sidebar-nav .nav-link.active i {
     color: #4154f1;
 }
 

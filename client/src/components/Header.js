@@ -17,9 +17,9 @@ export default function Header() {
         <header id="header" className="header fixed-top d-flex align-items-center">
 
             <div className="d-flex align-items-center justify-content-between">
-                <Link to={path.ADMIN} className="logo d-flex align-items-center">
+                <Link to={path.HOME} className="logo d-flex align-items-center">
                     <img src="/img/logo.png" alt="" />
-                    <span className="d-none d-lg-block">NiceAdmin</span>
+                    <span className="d-none d-lg-block">NiceApp</span>
                 </Link>
                 <i className="bi bi-list toggle-sidebar-btn"></i>
             </div>
@@ -198,7 +198,7 @@ export default function Header() {
                             </li>
 
                             <li>
-                                <Link className="dropdown-item d-flex align-items-center" to={path.ADMIN_PROFILE}>
+                                <Link className="dropdown-item d-flex align-items-center" to={path.PROFILE}>
                                     <i className="bi bi-person"></i>
                                     <span>My Profile</span>
                                 </Link>
@@ -208,7 +208,7 @@ export default function Header() {
                             </li>
 
                             <li>
-                                <Link className="dropdown-item d-flex align-items-center" to={path.ADMIN_PROFILE}>
+                                <Link className="dropdown-item d-flex align-items-center" to={path.PROFILE}>
                                     <i className="bi bi-gear"></i>
                                     <span>Account Settings</span>
                                 </Link>
@@ -218,7 +218,7 @@ export default function Header() {
                             </li>
 
                             <li>
-                                <Link className="dropdown-item d-flex align-items-center" to={path.ADMIN_FAQ}>
+                                <Link className="dropdown-item d-flex align-items-center" to={path.FAQ}>
                                     <i className="bi bi-question-circle"></i>
                                     <span>Need Help?</span>
                                 </Link>

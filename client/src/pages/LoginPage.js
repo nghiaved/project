@@ -34,9 +34,9 @@ export default function LoginPage() {
                             <div className="col-xl-4 col-lg-6 col-md-8 d-flex flex-column align-items-center justify-content-center">
 
                                 <div className="d-flex justify-content-center py-4">
-                                    <Link to={path.ADMIN} className="logo d-flex align-items-center w-auto">
+                                    <Link to={path.HOME} className="logo d-flex align-items-center w-auto">
                                         <img src="/img/logo.png" alt="" />
-                                        <span className="d-none d-lg-block">NiceAdmin</span>
+                                        <span className="d-none d-lg-block">NiceApp</span>
                                     </Link>
                                 </div>
 
