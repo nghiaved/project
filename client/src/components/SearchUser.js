@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import HeadlessTippy from '@tippyjs/react/headless'
 import { useDebounce } from '../hooks'
 import { apiUsersList } from '../services'
+import { path } from '../utils'
 
 export default function SearchUser({ userId }) {
     const [searchValue, setSearchValue] = useState('')
@@ -44,7 +45,9 @@ export default function SearchUser({ userId }) {
                     <ul className='list-group search-group'>
                         {searchResult?.length > 0 && searchResult.map((item, index) => {
                             if (item.id === userId) return ""
-                            return <Link key={index} to="#" className="list-group-item list-group-item-action">
+                            return <Link key={index} to={`${path.PROFILE}/${item.username}`}
+                                onClick={() => setShowResult(false)}
+                                className="list-group-item list-group-item-action">
                                 <div className="d-flex align-items-center my-1">
                                     <img src={item.image ? item.image : "/img/no-avatar.png"} alt="Profile" className="rounded-circle img-in-search" />
                                     <div className='ms-3'>

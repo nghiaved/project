@@ -77,6 +77,27 @@ exports.list = (req, res) => {
     )
 }
 
+exports.getInfo = (req, res) => {
+    const username = req.params.username
+    if (!username)
+        return res.status(400).json({ message: `Please complete all information` })
+
+    db.query(
+        'SELECT * FROM users WHERE username = ?', [username],
+        async (error, results) => {
+            if (error)
+                return res.status(400).json(error)
+
+            if (results.length === 0)
+                return res.status(400).json({ message: 'No users found' })
+
+            const user = results[0]
+            delete user.password
+            return res.status(200).json({ user })
+        }
+    )
+}
+
 exports.updateInfo = (req, res) => {
     const id = req.query.id
     const { firstName, lastName, about, address, phone, email, image } = req.body

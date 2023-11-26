@@ -8,6 +8,8 @@ import Home from './pages'
 import HomePage from './pages/HomePage'
 import Profile from './pages/Profile'
 import FAQ from './pages/FAQ'
+import UserProfile from './pages/UserProfile'
+
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import Error from './pages/Error'
@@ -58,6 +60,7 @@ export default function App() {
                 <Route index element={<HomePage />} />
                 <Route path={path.PROFILE} element={<Profile />} />
                 <Route path={path.FAQ} element={<FAQ />} />
+                <Route path={`${path.PROFILE}/:username`} element={<UserProfile />} />
             </Route>
 
             <Route path={path.LOGIN} element={<LoginPage />} />

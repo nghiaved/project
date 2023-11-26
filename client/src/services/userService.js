@@ -17,3 +17,6 @@ export const apiUsersUpdateInfo = data =>
 
 export const apiUsersList = searchValue =>
     axiosClient.get(`/api/users/list?search=${searchValue}`)
+
+export const apiUsersGetInfo = username =>
+    axiosClient.get(`/api/users/get-info/${username}`)
