@@ -1,8 +1,26 @@
-import React from 'react'
-import { NavLink } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { jwtDecode } from 'jwt-decode'
+import { NavLink, Link } from 'react-router-dom'
+import { apiFriendsGetListFriends } from '../services'
 import { path } from '../utils'
 
 export default function Sidebar() {
+    const [listFriends, setListFriends] = useState([])
+    const token = JSON.parse(window.localStorage.getItem('token'))
+    const userInfo = jwtDecode(token)
+
+    useEffect(() => {
+        const fetchApi = async () => {
+            try {
+                const res = await apiFriendsGetListFriends(userInfo.username)
+                setListFriends(res.data.friends)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        fetchApi()
+    }, [userInfo])
     return (
         <main id="sidebar" className="sidebar">
 
@@ -31,8 +49,19 @@ export default function Sidebar() {
                     </NavLink>
                 </li>
 
-            </ul>
+                <li className="nav-heading">Friends ({listFriends.length})</li>
 
-        </main>
+                {listFriends.map((item, index) => {
+                    return <li key={index} className="nav-item">
+                        <Link className="nav-link collapsed" to={`${path.PROFILE}/${item.username}`}>
+                            <img src={item.image ? item.image : "/img/no-avatar.png"} alt={item.username} className='rounded-circle img-in-sidebar me-2' />
+                            <span>{item.firstName} {item.lastName}</span>
+                        </Link>
+                    </li>
+                })}
+
+            </ul >
+
+        </main >
     )
 }

@@ -18,6 +18,25 @@ exports.getFriend = (req, res) => {
         })
 }
 
+exports.getListFriends = (req, res) => {
+    const { username } = req.query
+
+    if (!username)
+        return res.status(400).json({ message: `Please complete all information` })
+
+    db.query(
+        `SELECT users.* FROM users 
+        WHERE username IN ( SELECT friendUsername FROM friends WHERE username = '${username}' AND status = 1) 
+        OR username IN ( SELECT username FROM friends WHERE friendUsername = '${username}' AND status = 1)`,
+        async (error, results) => {
+            if (error)
+                return res.status(400).json(error)
+
+            if (results)
+                return res.status(200).json({ friends: results })
+        })
+}
+
 exports.sendRequest = (req, res) => {
     const { username, friendUsername } = req.body
 
