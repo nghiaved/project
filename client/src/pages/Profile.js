@@ -91,6 +91,11 @@ export default function Profile() {
 
                         <div className="card">
                             <div className="card-body pt-3">
+
+                                <div className="d-flex justify-content-end pt-4">
+                                    <Link to={`${path.PROFILE}/${userInfo.username}`} className="btn btn-outline-info">View profile</Link>
+                                </div>
+
                                 <ul className="nav nav-tabs nav-tabs-bordered">
 
                                     <li className="nav-item">

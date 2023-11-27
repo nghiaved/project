@@ -18,5 +18,6 @@ app.use(bodyParser.json({ limit: '50mb' }))
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true, parameterLimit: 50000 }))
 
 app.use('/api/users', require('./routes/user.route'))
+app.use('/api/friends', require('./routes/friend.route'))
 
 app.listen(process.env.PORT, () => console.log(`Server's running at port ${process.env.PORT}`))

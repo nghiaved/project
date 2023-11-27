@@ -1,25 +1,81 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
+import { jwtDecode } from 'jwt-decode'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { apiUsersGetInfo } from '../services'
+import { apiUsersGetInfo, apiFriendsGetFriend, apiFriendsSendRequest, apiFriendsAcceptRequest, apiFriendsDeleteFriend } from '../services'
 import { path } from '../utils'
 
 export default function UserProfile() {
     const [user, setUser] = useState({})
+    const [infoFriend, setInfoFriend] = useState()
     const { username } = useParams()
+    const token = JSON.parse(window.localStorage.getItem('token'))
+    const userInfo = jwtDecode(token)
     const navigate = useNavigate()
 
-    useEffect(() => {
-        const fetchApi = async () => {
-            try {
-                const res = await apiUsersGetInfo(username)
-                setUser(res.data.user)
-            } catch (error) {
-                navigate(username)
-            }
+    const getInfoUser = useCallback(async () => {
+        try {
+            const res = await apiUsersGetInfo(username)
+            setUser(res.data.user)
+        } catch (error) {
+            navigate(username)
         }
-
-        fetchApi()
     }, [username, navigate])
+
+    const getInfoFriend = useCallback(async () => {
+        try {
+            const res = await apiFriendsGetFriend({ username: userInfo.username, friendUsername: username })
+            setInfoFriend(res.data.friend[0])
+        } catch (error) {
+            setInfoFriend(null)
+        }
+    }, [userInfo.username, username])
+
+    useEffect(() => {
+        getInfoUser()
+        getInfoFriend()
+    }, [getInfoUser, getInfoFriend])
+
+    const handleSendRequest = async () => {
+        try {
+            await apiFriendsSendRequest({ username: userInfo.username, friendUsername: username })
+            getInfoFriend()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleAcceptRequest = async () => {
+        try {
+            await apiFriendsAcceptRequest(infoFriend.id)
+            getInfoFriend()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleDeleteFriend = async () => {
+        try {
+            await apiFriendsDeleteFriend(infoFriend.id)
+            getInfoFriend()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const renderStatus = () => {
+        if (infoFriend?.status === 1) {
+            return <button type="button" className="btn btn-outline-danger me-4" data-bs-toggle="modal" data-bs-target="#exampleModal">Unfriend</button>
+        } else if (infoFriend?.status === 0) {
+            if (infoFriend?.sender === userInfo.username)
+                return <button type="button" className="btn btn-outline-danger me-4" data-bs-toggle="modal" data-bs-target="#exampleModal">Recall</button>
+            else return <React.Fragment>
+                <button onClick={handleAcceptRequest} type="button" className="btn btn-outline-primary me-2">Agree</button>
+                <button onClick={handleDeleteFriend} type="button" className="btn btn-outline-danger me-4">Refuse</button>
+            </React.Fragment>
+        } else {
+            return <button onClick={handleSendRequest} type="button" className="btn btn-outline-primary me-4">Add friend</button>
+        }
+    }
 
     return (
         <main id="main" className="main">
@@ -57,10 +113,33 @@ export default function UserProfile() {
                         <div className="card">
                             <div className="card-body pt-3">
 
-                                <div className='d-flex justify-content-end pt-4'>
-                                    <button type="button" className="btn btn-outline-primary me-4">Add friend</button>
-                                    <button type="button" className="btn btn-outline-success">Send message</button>
-                                </div>
+                                {userInfo.username !== username
+                                    ? <div className='d-flex justify-content-end pt-4'>
+                                        {renderStatus()}
+                                        <button type="button" className="btn btn-outline-success">Send message</button>
+                                        <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div className="modal-dialog modal-dialog-centered">
+                                                <div className="modal-content">
+                                                    <div className="modal-header">
+                                                        <h5 className="modal-title" id="exampleModalLabel">Delete friendship</h5>
+                                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div className="modal-body">
+                                                        Are you sure you want to delete your friendship relationship?
+                                                    </div>
+                                                    <div className="modal-footer">
+                                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        <button onClick={handleDeleteFriend} data-bs-dismiss="modal" type="button" className="btn btn-danger">Delete</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    : <div className="d-flex justify-content-end pt-4">
+                                        <Link to={path.PROFILE} className="btn btn-outline-warning">Edit profile</Link>
+                                    </div>
+                                }
+
 
                                 <div className="tab-content">
 
