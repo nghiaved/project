@@ -20,7 +20,7 @@ export default function Sidebar() {
         }
 
         fetchApi()
-    }, [userInfo])
+    }, [userInfo.username])
     return (
         <main id="sidebar" className="sidebar">
 
@@ -36,9 +36,16 @@ export default function Sidebar() {
                 </li>
 
                 <li className="nav-item">
-                    <NavLink className="nav-link collapsed" to={path.PROFILE}>
-                        <i className="bi bi-person"></i>
-                        <span>Profile</span>
+                    <NavLink className="nav-link collapsed" to={path.MY_POSTS}>
+                        <i className="bi bi-sticky"></i>
+                        <span>My Posts</span>
+                    </NavLink>
+                </li>
+
+                <li className="nav-item">
+                    <NavLink className="nav-link collapsed" to={path.ACCOUNT_SETTINGS}>
+                        <i className="bi bi-gear"></i>
+                        <span>Account Settings</span>
                     </NavLink>
                 </li>
 

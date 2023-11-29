@@ -157,7 +157,7 @@ export default function Profile() {
                                                         ? <img className='border' src={image} alt="Profile" />
                                                         : <img className='border' src={userInfo.image ? userInfo.image : "/img/no-avatar.png"} alt="Profile" />}
                                                     <div className="pt-2">
-                                                        <label>
+                                                        <label className='set-upload-img'>
                                                             <FileBase64
                                                                 multiple={false}
                                                                 onDone={({ base64 }) => {

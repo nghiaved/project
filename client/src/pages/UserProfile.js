@@ -136,7 +136,7 @@ export default function UserProfile() {
                                         </div>
                                     </div>
                                     : <div className="d-flex justify-content-end pt-4">
-                                        <Link to={path.PROFILE} className="btn btn-outline-warning">Edit profile</Link>
+                                        <Link to={path.ACCOUNT_SETTINGS} className="btn btn-outline-warning">Edit profile</Link>
                                     </div>
                                 }
 

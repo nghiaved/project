@@ -6,9 +6,10 @@ import { path } from './utils'
 import Home from './pages'
 
 import HomePage from './pages/HomePage'
-import Profile from './pages/Profile'
+import AccountSettings from './pages/AccountSettings'
 import FAQ from './pages/FAQ'
 import UserProfile from './pages/UserProfile'
+import MyPosts from './pages/MyPosts'
 
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -58,8 +59,9 @@ export default function App() {
         <Routes>
             <Route path={path.HOME} element={JSON.parse(window.localStorage.getItem('token')) ? <Home /> : <LoginPage />} >
                 <Route index element={<HomePage />} />
-                <Route path={path.PROFILE} element={<Profile />} />
+                <Route path={path.ACCOUNT_SETTINGS} element={<AccountSettings />} />
                 <Route path={path.FAQ} element={<FAQ />} />
+                <Route path={path.MY_POSTS} element={<MyPosts />} />
                 <Route path={`${path.PROFILE}/:username`} element={<UserProfile />} />
             </Route>
 

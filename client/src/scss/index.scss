@@ -11,3 +11,18 @@
     height: 28px;
     object-fit: cover;
 }
+
+.img-in-create-post {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
+.set-upload-img input[type="file"] {
+    display: none;
+}
+
+.ql-editor {
+    font-size: 16px;
+    height: 160px;
+}

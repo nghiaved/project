@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { path, alertMessage } from '../utils'
 import { apiUsersDeleteAccount, apiUsersChangePassword, apiUsersUpdateInfo } from '../services'
 
-export default function Profile() {
+export default function AccountSettings() {
     const [image, setImage] = useState()
     const { register: registerUpdateInfo, handleSubmit: handleSubmitUpdateInfo } = useForm()
     const { register: registerChangePassword, handleSubmit: handleSubmitChangePassword } = useForm()
@@ -61,12 +61,12 @@ export default function Profile() {
         <main id="main" className="main">
 
             <div className="pagetitle">
-                <h1>Profile</h1>
+                <h1>Account Settings</h1>
                 <nav>
                     <ol className="breadcrumb">
                         <li className="breadcrumb-item"><Link to={path.HOME}>Home</Link></li>
-                        <li className="breadcrumb-item">Users</li>
-                        <li className="breadcrumb-item active">Profile</li>
+                        <li className="breadcrumb-item">Pages</li>
+                        <li className="breadcrumb-item active">Account Settings</li>
                     </ol>
                 </nav>
             </div>
@@ -162,7 +162,7 @@ export default function Profile() {
                                                         ? <img className='border' src={image} alt="Profile" />
                                                         : <img className='border' src={userInfo.image ? userInfo.image : "/img/no-avatar.png"} alt="Profile" />}
                                                     <div className="pt-2">
-                                                        <label>
+                                                        <label className='set-upload-img'>
                                                             <FileBase64
                                                                 multiple={false}
                                                                 onDone={({ base64 }) => {
