@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react'
-import FileBase64 from 'react-file-base64'
 import ReactQuill from 'react-quill'
 import moment from 'moment'
 import { jwtDecode } from 'jwt-decode'
@@ -30,7 +29,10 @@ export default function MyPosts() {
 
     const handleCreatePost = async () => {
         try {
-            const data = { author: userInfo.username, status, image }
+            const data = new FormData()
+            data.append('author', userInfo.username)
+            data.append('status', status)
+            if (image) data.append('image', image)
             const res = await apiFriendsCreatePost(data)
             if (res.status === 200) {
                 alertMessage(createPostRef.current, res.data.message, true)
@@ -71,16 +73,11 @@ export default function MyPosts() {
                                 <div className="d-flex justify-content-between mt-3">
                                     <div className="text-center">
                                         {image
-                                            ? <img className='border img-in-create-post' src={image} alt="Profile" />
+                                            ? <img className='border img-in-create-post' src={URL.createObjectURL(image)} alt="Profile" />
                                             : <img className='border img-in-create-post' src="/img/no-image.jpeg" alt="Profile" />}
                                         <div className="pt-2">
                                             <label className='set-upload-img'>
-                                                <FileBase64
-                                                    multiple={false}
-                                                    onDone={({ base64 }) => {
-                                                        setImage(base64)
-                                                    }}
-                                                />
+                                                <input type='file' onChange={e => setImage(e.target.files[0])} />
                                                 <i className="btn btn-primary btn-sm bi bi-upload"></i>
                                             </label>
                                             <i onClick={() => setImage()} className="ms-2 btn btn-danger btn-sm bi bi-trash"></i>
