@@ -5,5 +5,7 @@ const router = express.Router()
 
 router.get('/get-all-my-posts', postController.getAllMyPosts)
 router.post('/create-post', postController.createPost)
+router.put('/update-post', postController.updatePost)
+router.delete('/delete-post', postController.deletePost)
 
 module.exports = router
