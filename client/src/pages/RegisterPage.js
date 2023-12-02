@@ -26,7 +26,7 @@ export default function RegisterPage() {
                 <section className="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
                     <div className="container">
                         <div className="row justify-content-center">
-                            <div className="col-xl-4 col-lg-6 col-md-6 d-flex flex-column align-items-center justify-content-center">
+                            <div className="col-xl-4 col-lg-6 col-md-8 d-flex flex-column align-items-center justify-content-center">
 
                                 <div className="d-flex justify-content-center py-4">
                                     <Link to={path.HOME} className="logo d-flex align-items-center w-auto">

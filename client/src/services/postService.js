@@ -1,7 +1,7 @@
 import axiosClient from './axiosClient'
 
-export const apiPostsGetAllMyPosts = username =>
-    axiosClient.get(`/api/posts/get-all-my-posts?author=${username}`)
+export const apiPostsGetAllMyPosts = ({ author, page, limit }) =>
+    axiosClient.get(`/api/posts/get-all-my-posts?author=${author}&page=${page}&limit=${limit}`)
 
 export const apiPostsCreatePost = data =>
     axiosClient.post('/api/posts/create-post', data)

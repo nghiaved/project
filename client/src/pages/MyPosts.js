@@ -8,10 +8,13 @@ import { path, alertMessage } from '../utils'
 
 export default function MyPosts() {
     const [myPosts, setMyPosts] = useState([])
+    const [pageNumber, setPageNumber] = useState(1)
+    const [numberOfPages, setNumberOfPages] = useState([])
     const [imageCreate, setImageCreate] = useState()
     const [statusCreate, setStatusCreate] = useState()
     const [imageUpdate, setImageUpdate] = useState()
     const [statusUpdate, setStatusUpdate] = useState()
+    const [edit, setEdit] = useState({})
     const token = JSON.parse(window.localStorage.getItem('token'))
     const userInfo = jwtDecode(token)
     const postRef = useRef()
@@ -20,12 +23,14 @@ export default function MyPosts() {
 
     const fetchAllMyPosts = useCallback(async () => {
         try {
-            const res = await apiPostsGetAllMyPosts(userInfo.username)
+            const res = await apiPostsGetAllMyPosts({ author: userInfo.username, page: pageNumber, limit: 4 })
             setMyPosts(res.data.posts)
+            setNumberOfPages(new Array(res.data.totalPage).fill(null).map((item, index) => ++index))
         } catch (error) {
             console.log(error)
         }
-    }, [userInfo.username])
+    }, [userInfo.username, pageNumber])
+
 
     useEffect(() => {
         fetchAllMyPosts()
@@ -158,41 +163,10 @@ export default function MyPosts() {
                                     </div>
                                 </div>
                                 <div className='card-footer text-end'>
-                                    <button onClick={() => setStatusUpdate(item.status)} className='btn btn-outline-warning me-3' data-bs-toggle="modal" data-bs-target={`#updateModal${item.id}`}>Edit</button>
-                                    <div className="modal fade" id={`updateModal${item.id}`} tabIndex="-1" aria-labelledby={`updateModal${item.id}Label`} aria-hidden="true">
-                                        <div className="modal-dialog modal-dialog-centered">
-                                            <div className="modal-content">
-                                                <div className="modal-header">
-                                                    <h5 className="modal-title" id={`updateModal${item.id}Label`}>Edit Post</h5>
-                                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div className="modal-body text-start">
-                                                    <ReactQuill value={statusUpdate} ref={statusUpdateRef} theme="snow" placeholder='Status' />
-                                                    <div className="d-flex justify-content-between mt-3">
-                                                        <div className="text-center">
-                                                            {imageUpdate
-                                                                ? <img className='border img-in-create-post' src={URL.createObjectURL(imageUpdate)} alt="Profile" />
-                                                                : <img className='border img-in-create-post' src={item.image ? item.image : "/img/no-image.jpeg"} alt="Profile" />}
-                                                            <div className="pt-2">
-                                                                <label className='set-upload-img'>
-                                                                    <input type='file' onChange={e => {
-                                                                        setStatusUpdate(statusUpdateRef.current.value)
-                                                                        setImageUpdate(e.target.files[0])
-                                                                    }} />
-                                                                    <i className="btn btn-primary btn-sm bi bi-upload"></i>
-                                                                </label>
-                                                                <i onClick={() => setImageUpdate()} className="ms-2 btn btn-danger btn-sm bi bi-trash"></i>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="modal-footer">
-                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                    <button onClick={() => handleUpdatePost(item)} data-bs-dismiss="modal" type="submit" className='btn btn-warning'>Save</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <button onClick={() => {
+                                        setEdit(item)
+                                        setStatusUpdate(item.status)
+                                    }} className='btn btn-outline-warning me-3' data-bs-toggle="modal" data-bs-target="#updateModal">Edit</button>
                                     <button className='btn btn-outline-danger' data-bs-toggle="modal" data-bs-target={`#deleteModal${item.id}`}>Delete</button>
                                     <div className="modal fade" id={`deleteModal${item.id}`} tabIndex="-1" aria-labelledby={`deleteModal${item.id}Label`} aria-hidden="true">
                                         <div className="modal-dialog modal-dialog-centered">
@@ -215,6 +189,58 @@ export default function MyPosts() {
                             </div>
                         </div>
                     })}
+
+                    <nav aria-label="Page navigation example">
+                        <ul className="pagination justify-content-center">
+                            <li className={pageNumber === 1 ? "page-item disabled" : "page-item"}>
+                                <Link onClick={() => setPageNumber(pageNumber - 1)} className="page-link" to="#" tabIndex="-1" aria-disabled="true">Previous</Link>
+                            </li>
+                            {numberOfPages.map((item) => {
+                                return <li key={item} onClick={() => setPageNumber(item)} className="page-item">
+                                    <Link className={pageNumber === item ? "page-link active" : "page-link"} to="#">{item}</Link>
+                                </li>
+                            })}
+                            <li className={pageNumber === numberOfPages.length ? "page-item disabled" : "page-item"}>
+                                <Link onClick={() => setPageNumber(pageNumber + 1)} className="page-link" to="#">Next</Link>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    {edit &&
+                        <div className="modal fade" id="updateModal" tabIndex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+                            <div className="modal-dialog modal-dialog-centered">
+                                <div className="modal-content">
+                                    <div className="modal-header">
+                                        <h5 className="modal-title" id="updateModalLabel">Edit Post</h5>
+                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div className="modal-body text-start">
+                                        <ReactQuill value={statusUpdate} ref={statusUpdateRef} theme="snow" placeholder='Status' />
+                                        <div className="d-flex justify-content-between mt-3">
+                                            <div className="text-center">
+                                                {imageUpdate
+                                                    ? <img className='border img-in-create-post' src={URL.createObjectURL(imageUpdate)} alt="Profile" />
+                                                    : <img className='border img-in-create-post' src={edit.image ? edit.image : "/img/no-image.jpeg"} alt="Profile" />}
+                                                <div className="pt-2">
+                                                    <label className='set-upload-img'>
+                                                        <input type='file' onChange={e => {
+                                                            setStatusUpdate(statusUpdateRef.current.value)
+                                                            setImageUpdate(e.target.files[0])
+                                                        }} />
+                                                        <i className="btn btn-primary btn-sm bi bi-upload"></i>
+                                                    </label>
+                                                    <i onClick={() => setImageUpdate()} className="ms-2 btn btn-danger btn-sm bi bi-trash"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="modal-footer">
+                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button onClick={() => handleUpdatePost(edit)} data-bs-dismiss="modal" type="submit" className='btn btn-warning'>Save</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>}
                 </div>
 
             </section>

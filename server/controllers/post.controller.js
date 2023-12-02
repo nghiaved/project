@@ -25,20 +25,33 @@ exports.createPost = (req, res) => {
 }
 
 exports.getAllMyPosts = (req, res) => {
-    const { author } = req.query
+    const { author, page, limit } = req.query
 
-    if (!author)
+    if (!author || !page || !limit)
         return res.status(400).json({ message: `Please complete all information` })
 
-    db.query(
-        'SELECT * FROM posts WHERE author = ?', [author],
+    db.query('SELECT count(*) FROM posts WHERE author = ?', [author],
         async (error, results) => {
             if (error)
                 return res.status(400).json(error)
 
-            if (results)
-                return res.status(200).json({ posts: results })
-        })
+            if (results) {
+                const totalData = results[0]['count(*)']
+                const totalPage = Math.ceil(totalData / limit)
+
+                db.query('SELECT * FROM posts WHERE author = ? ORDER BY createAt DESC LIMIT ? OFFSET ?',
+                    [author, +limit, +((page - 1) * limit)],
+                    async (error, results) => {
+                        if (error)
+                            return res.status(400).json(error)
+
+                        if (results)
+                            return res.status(200).json({ totalData, totalPage, page, limit, posts: results })
+                    }
+                )
+            }
+        }
+    )
 }
 
 exports.updatePost = (req, res) => {
