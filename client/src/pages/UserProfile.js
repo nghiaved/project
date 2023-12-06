@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { jwtDecode } from 'jwt-decode'
 import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useGlobalState } from '../hooks'
 import { apiUsersGetInfo, apiFriendsGetFriend, apiFriendsSendRequest, apiFriendsAcceptRequest, apiFriendsDeleteFriend } from '../services'
 import { path } from '../utils'
 
 export default function UserProfile() {
+    const [state, dispatch] = useGlobalState()
     const [user, setUser] = useState({})
     const [infoFriend, setInfoFriend] = useState()
     const { username } = useParams()
@@ -24,7 +26,7 @@ export default function UserProfile() {
     const getInfoFriend = useCallback(async () => {
         try {
             const res = await apiFriendsGetFriend({ username: userInfo.username, friendUsername: username })
-            setInfoFriend(res.data.friend[0])
+            setInfoFriend(res.data.friend)
         } catch (error) {
             setInfoFriend(null)
         }
@@ -39,6 +41,7 @@ export default function UserProfile() {
         try {
             await apiFriendsSendRequest({ username: userInfo.username, friendUsername: username })
             getInfoFriend()
+            dispatch({ fetchAgain: !state.fetchAgain })
         } catch (error) {
             console.log(error)
         }
@@ -48,6 +51,7 @@ export default function UserProfile() {
         try {
             await apiFriendsAcceptRequest(infoFriend.id)
             getInfoFriend()
+            dispatch({ fetchAgain: !state.fetchAgain })
         } catch (error) {
             console.log(error)
         }
@@ -57,6 +61,7 @@ export default function UserProfile() {
         try {
             await apiFriendsDeleteFriend(infoFriend.id)
             getInfoFriend()
+            dispatch({ fetchAgain: !state.fetchAgain })
         } catch (error) {
             console.log(error)
         }

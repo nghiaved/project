@@ -14,7 +14,7 @@ exports.getFriend = (req, res) => {
                 return res.status(400).json(error)
 
             if (results)
-                return res.status(200).json({ friend: results })
+                return res.status(200).json({ friend: results[0] })
         })
 }
 

@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from 'react'
 import { jwtDecode } from 'jwt-decode'
 import { NavLink, Link } from 'react-router-dom'
+import { useGlobalState } from '../hooks'
 import { apiFriendsGetListFriends } from '../services'
 import { path } from '../utils'
 
 export default function Sidebar() {
+    const [state] = useGlobalState()
+    const [fetchAgain, setFetchAgain] = useState(false)
     const [listFriends, setListFriends] = useState([])
     const token = JSON.parse(window.localStorage.getItem('token'))
     const userInfo = jwtDecode(token)
 
     useEffect(() => {
+        if (state.fetchAgain !== fetchAgain) {
+            setFetchAgain(state.fetchAgain)
+        }
+
         const fetchApi = async () => {
             try {
                 const res = await apiFriendsGetListFriends(userInfo.username)
@@ -20,7 +27,7 @@ export default function Sidebar() {
         }
 
         fetchApi()
-    }, [userInfo.username])
+    }, [userInfo.username, state.fetchAgain, fetchAgain])
     return (
         <main id="sidebar" className="sidebar">
 
