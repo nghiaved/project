@@ -8,6 +8,14 @@ export default function Header() {
     const userInfo = jwtDecode(token)
     const navigate = useNavigate()
 
+    const handleToggleSidebar = () => {
+        document.querySelector('body').classList.toggle('toggle-sidebar')
+    }
+
+    const handleToggleSearchBar = () => {
+        document.querySelector('.search-bar').classList.toggle('search-bar-show')
+    }
+
     const handleLogout = () => {
         window.localStorage.removeItem('token')
         navigate(0)
@@ -21,7 +29,7 @@ export default function Header() {
                     <img src="/img/logo.png" alt="" />
                     <span className="d-none d-lg-block">NiceAdmin</span>
                 </Link>
-                <i className="bi bi-list toggle-sidebar-btn"></i>
+                <i onClick={handleToggleSidebar} className="bi bi-list toggle-sidebar-btn"></i>
             </div>
 
             <div className="search-bar">
@@ -35,7 +43,7 @@ export default function Header() {
                 <ul className="d-flex align-items-center">
 
                     <li className="nav-item d-block d-md-none">
-                        <Link className="nav-link nav-icon search-bar-toggle " to="#search">
+                        <Link onClick={handleToggleSearchBar} className="nav-link nav-icon search-bar-toggle " to="#search">
                             <i className="bi bi-search"></i>
                         </Link>
                     </li>
