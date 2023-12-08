@@ -1,7 +1,9 @@
 const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
-const fileupload = require("express-fileupload")
+const fileupload = require('express-fileupload')
+const http = require('http')
+const { Server } = require('socket.io')
 require('dotenv').config({ path: './.env' })
 
 const app = express()
@@ -24,4 +26,29 @@ app.use('/api/users', require('./routes/user.route'))
 app.use('/api/friends', require('./routes/friend.route'))
 app.use('/api/posts', require('./routes/post.route'))
 
-app.listen(process.env.PORT, () => console.log(`Server's running at port ${process.env.PORT}`))
+const server = http.createServer(app)
+
+const io = new Server(server, {
+    cors: {
+        origin: process.env.ACCESS_CORS,
+        methods: ['GET', 'POST'],
+    },
+})
+
+io.on('connection', (socket) => {
+    console.log(`User Connected: ${socket.id}`)
+
+    socket.on('join-username', (username) => {
+        socket.join(username)
+    })
+
+    socket.on('request-friend', (username) => {
+        io.to(username).emit('receive-username', username)
+    })
+
+    socket.on('disconnect', () => {
+        console.log(`User Disconnected: ${socket.id}`)
+    })
+})
+
+server.listen(process.env.PORT, () => console.log(`Server's running at port ${process.env.PORT}`))

@@ -3,10 +3,11 @@ import { jwtDecode } from 'jwt-decode'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useGlobalState } from '../hooks'
 import { apiUsersGetInfo, apiFriendsGetFriend, apiFriendsSendRequest, apiFriendsAcceptRequest, apiFriendsDeleteFriend } from '../services'
-import { path } from '../utils'
+import { path, socket } from '../utils'
 
 export default function UserProfile() {
     const [state, dispatch] = useGlobalState()
+    const [fetchAgain, setFetchAgain] = useState(false)
     const [user, setUser] = useState({})
     const [infoFriend, setInfoFriend] = useState()
     const { username } = useParams()
@@ -33,38 +34,35 @@ export default function UserProfile() {
     }, [userInfo.username, username])
 
     useEffect(() => {
+        if (state.fetchAgain !== fetchAgain) {
+            setFetchAgain(state.fetchAgain)
+        }
+
         getInfoUser()
         getInfoFriend()
-    }, [getInfoUser, getInfoFriend])
+    }, [getInfoUser, getInfoFriend, setFetchAgain, fetchAgain, state.fetchAgain])
 
-    const handleSendRequest = async () => {
+    const handleRequestFriend = async (api, data) => {
         try {
-            await apiFriendsSendRequest({ username: userInfo.username, friendUsername: username })
+            await api(data)
             getInfoFriend()
             dispatch({ fetchAgain: !state.fetchAgain })
+            socket.emit('request-friend', username)
         } catch (error) {
             console.log(error)
         }
     }
 
-    const handleAcceptRequest = async () => {
-        try {
-            await apiFriendsAcceptRequest(infoFriend.id)
-            getInfoFriend()
-            dispatch({ fetchAgain: !state.fetchAgain })
-        } catch (error) {
-            console.log(error)
-        }
+    const handleSendRequest = () => {
+        handleRequestFriend(apiFriendsSendRequest, { username: userInfo.username, friendUsername: username })
     }
 
-    const handleDeleteFriend = async () => {
-        try {
-            await apiFriendsDeleteFriend(infoFriend.id)
-            getInfoFriend()
-            dispatch({ fetchAgain: !state.fetchAgain })
-        } catch (error) {
-            console.log(error)
-        }
+    const handleAcceptRequest = () => {
+        handleRequestFriend(apiFriendsAcceptRequest, infoFriend.id)
+    }
+
+    const handleDeleteFriend = () => {
+        handleRequestFriend(apiFriendsDeleteFriend, infoFriend.id)
     }
 
     const renderStatus = () => {
