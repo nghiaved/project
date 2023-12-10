@@ -14,10 +14,10 @@ export const alertMessage = (ref, message, type = true) => {
         }
 
         toast.innerHTML = `
-        <div class="alert alert-${colorType} alert-dismissible fade show" role="alert">
+        <div class="alert alert-${colorType} alert-dismissible fade show py-1" role="alert">
             <i class="bi bi-${iconType} me-1"></i>
             ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close p-2" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         `
         ref.appendChild(toast)

@@ -1,13 +1,20 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { jwtDecode } from 'jwt-decode'
-import { path } from '../utils'
+import moment from 'moment'
+import { useGlobalState } from '../hooks'
+import { apiFriendsGetListRequests, apiFriendsAcceptRequest, apiFriendsDeleteFriend } from '../services'
+import { path, socket, alertMessage } from '../utils'
 import SearchUser from './SearchUser'
 
 export default function Header() {
+    const [state, dispatch] = useGlobalState()
+    const [fetchAgain, setFetchAgain] = useState(false)
+    const [listFriends, setListFriends] = useState([])
     const token = JSON.parse(window.localStorage.getItem('token'))
     const userInfo = jwtDecode(token)
     const navigate = useNavigate()
+    const toastRef = useRef()
 
     const handleToggleSidebar = () => {
         document.querySelector('body').classList.toggle('toggle-sidebar')
@@ -20,6 +27,51 @@ export default function Header() {
     const handleLogout = () => {
         window.localStorage.removeItem('token')
         navigate(0)
+    }
+
+    useEffect(() => {
+        if (state.fetchAgain !== fetchAgain) {
+            setFetchAgain(state.fetchAgain)
+        }
+
+        const fetchApi = async () => {
+            try {
+                const res = await apiFriendsGetListRequests(userInfo.username)
+                setListFriends(res.data.friends.reverse())
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        fetchApi()
+    }, [userInfo.username, state.fetchAgain, fetchAgain])
+
+    const handleAcceptRequest = async (e, id, friendUsername) => {
+        e.stopPropagation()
+        try {
+            const res = await apiFriendsAcceptRequest(id)
+            if (res.status === 200) {
+                dispatch({ fetchAgain: !state.fetchAgain })
+                socket.emit('request-friend', friendUsername)
+                alertMessage(toastRef.current, res.data.message, true)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleDeleteFriend = async (e, id, friendUsername) => {
+        e.stopPropagation()
+        try {
+            const res = await apiFriendsDeleteFriend(id)
+            if (res.status === 200) {
+                dispatch({ fetchAgain: !state.fetchAgain })
+                socket.emit('request-friend', friendUsername)
+                alertMessage(toastRef.current, res.data.message, true)
+            }
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     return (
@@ -48,65 +100,37 @@ export default function Header() {
 
                         <Link className="nav-link nav-icon" to="/" data-bs-toggle="dropdown">
                             <i className="bi bi-bell"></i>
-                            <span className="badge bg-primary badge-number">4</span>
+                            <span className="badge bg-primary badge-number">{listFriends.length}</span>
                         </Link>
 
                         <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
                             <li className="dropdown-header">
-                                You have 4 new notifications
+                                You have {listFriends.length} new notifications
                                 <Link to="/"><span className="badge rounded-pill bg-primary p-2 ms-2">View all</span></Link>
                             </li>
-                            <li>
-                                <hr className="dropdown-divider" />
-                            </li>
 
-                            <li className="notification-item">
-                                <i className="bi bi-exclamation-circle text-warning"></i>
-                                <div>
-                                    <h4>Lorem Ipsum</h4>
-                                    <p>Quae dolorem earum veritatis oditseno</p>
-                                    <p>30 min. ago</p>
+                            <li className='mx-2 h6' ref={toastRef}></li>
+
+                            {listFriends.map((item, index) => {
+                                return <div key={index}>
+                                    <li>
+                                        <hr className="dropdown-divider" />
+                                    </li>
+                                    <li className="notification-item align-items-start">
+                                        <Link to={`${path.PROFILE}/${item.username}`}>
+                                            <img src={item.image ? item.image : "/img/no-avatar.png"} alt="Profile" className="rounded-circle img-in-notify" />
+                                        </Link>
+                                        <div className='ms-4'>
+                                            <h4>{item.firstName} sent you a friend request.</h4>
+                                            <p>
+                                                <button onClick={(e) => handleAcceptRequest(e, item.id, item.username)} className='btn btn-primary me-2 py-0 px-3'>Confirm</button>
+                                                <button onClick={(e) => handleDeleteFriend(e, item.id, item.username)} className='btn btn-secondary py-0 px-3'>Delete</button>
+                                            </p>
+                                            <p>{moment(item.createAt).fromNow()}</p>
+                                        </div>
+                                    </li>
                                 </div>
-                            </li>
-
-                            <li>
-                                <hr className="dropdown-divider" />
-                            </li>
-
-                            <li className="notification-item">
-                                <i className="bi bi-x-circle text-danger"></i>
-                                <div>
-                                    <h4>Atque rerum nesciunt</h4>
-                                    <p>Quae dolorem earum veritatis oditseno</p>
-                                    <p>1 hr. ago</p>
-                                </div>
-                            </li>
-
-                            <li>
-                                <hr className="dropdown-divider" />
-                            </li>
-
-                            <li className="notification-item">
-                                <i className="bi bi-check-circle text-success"></i>
-                                <div>
-                                    <h4>Sit rerum fuga</h4>
-                                    <p>Quae dolorem earum veritatis oditseno</p>
-                                    <p>2 hrs. ago</p>
-                                </div>
-                            </li>
-
-                            <li>
-                                <hr className="dropdown-divider" />
-                            </li>
-
-                            <li className="notification-item">
-                                <i className="bi bi-info-circle text-primary"></i>
-                                <div>
-                                    <h4>Dicta reprehenderit</h4>
-                                    <p>Quae dolorem earum veritatis oditseno</p>
-                                    <p>4 hrs. ago</p>
-                                </div>
-                            </li>
+                            })}
 
                             <li>
                                 <hr className="dropdown-divider" />

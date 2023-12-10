@@ -6,6 +6,9 @@ export const apiFriendsGetFriend = data =>
 export const apiFriendsGetListFriends = username =>
     axiosClient.get(`/api/friends/get-list-friends?username=${username}`)
 
+export const apiFriendsGetListRequests = username =>
+    axiosClient.get(`/api/friends/get-list-requests?username=${username}`)
+
 export const apiFriendsSendRequest = data =>
     axiosClient.post('/api/friends/send-request', data)
 

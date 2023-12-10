@@ -37,6 +37,25 @@ exports.getListFriends = (req, res) => {
         })
 }
 
+exports.getListRequests = (req, res) => {
+    const { username } = req.query
+
+    if (!username)
+        return res.status(400).json({ message: `Please complete all information` })
+
+    db.query(
+        `SELECT users.*, friends.createAt, friends.id FROM users INNER JOIN friends
+        ON friends.username = users.username AND friends.friendUsername = '${username}' WHERE users.username
+        IN (SELECT friends.username FROM friends WHERE friends.friendUsername = '${username}' AND friends.status = 0)`,
+        async (error, results) => {
+            if (error)
+                return res.status(400).json(error)
+
+            if (results)
+                return res.status(200).json({ friends: results })
+        })
+}
+
 exports.sendRequest = (req, res) => {
     const { username, friendUsername } = req.body
 
