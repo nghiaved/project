@@ -1,7 +1,8 @@
 import React, { createContext, useReducer, useContext } from 'react'
 
 const defaultGlobalState = {
-    fetchAgain: false
+    fetchAgain: false,
+    chatUser: null
 }
 
 export const globalStateContext = createContext(defaultGlobalState)

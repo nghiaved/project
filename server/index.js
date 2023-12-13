@@ -25,6 +25,8 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true, parameterLimit: 5
 app.use('/api/users', require('./routes/user.route'))
 app.use('/api/friends', require('./routes/friend.route'))
 app.use('/api/posts', require('./routes/post.route'))
+app.use('/api/chats', require('./routes/chat.route'))
+app.use('/api/messages', require('./routes/message.route'))
 
 const server = http.createServer(app)
 

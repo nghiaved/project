@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom'
 import Header from '../components/Header'
 import Sidebar from '../components/Sidebar'
 import BackToTop from '../components/BackToTop'
+import Chat from '../components/Chat'
 import { socket } from '../utils'
 import { useGlobalState } from '../hooks'
 
@@ -25,6 +26,7 @@ export default function Home() {
         <React.Fragment>
             <Header />
             <Sidebar />
+            <Chat />
             <Outlet />
             <BackToTop />
         </React.Fragment>

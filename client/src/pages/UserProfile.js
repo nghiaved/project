@@ -119,7 +119,7 @@ export default function UserProfile() {
                                 {userInfo.username !== username
                                     ? <div className='d-flex justify-content-end pt-4'>
                                         {renderStatus()}
-                                        <button type="button" className="btn btn-outline-success">Send message</button>
+                                        <button onClick={() => dispatch({ chatUser: username })} type="button" className="btn btn-outline-success">Send message</button>
                                         <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                             <div className="modal-dialog modal-dialog-centered">
                                                 <div className="modal-content">

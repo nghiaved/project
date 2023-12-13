@@ -1,3 +1,5 @@
 export * from './userService'
 export * from './friendService'
 export * from './postService'
+export * from './chatService'
+export * from './messageService'
