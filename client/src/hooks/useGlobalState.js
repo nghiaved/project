@@ -2,7 +2,7 @@ import React, { createContext, useReducer, useContext } from 'react'
 
 const defaultGlobalState = {
     fetchAgain: false,
-    chatUser: null
+    userConversation: null
 }
 
 export const globalStateContext = createContext(defaultGlobalState)
