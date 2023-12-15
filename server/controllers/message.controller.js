@@ -6,12 +6,7 @@ exports.getAllMessages = (req, res) => {
     if (!id)
         return res.status(400).json({ message: `Please complete all information` })
 
-    db.query(`SELECT messages.content, messages.createAt,
-            u.username AS sender, v.username AS receiver
-            FROM messages
-            INNER JOIN users u ON messages.sender = u.id
-            INNER JOIN users v ON messages.receiver = v.id
-            WHERE messages.id = ?`, [id],
+    db.query(`SELECT * FROM messages WHERE id = ?`, [id],
         (error, results) => {
             if (error)
                 return res.status(400).json(error)

@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { jwtDecode } from 'jwt-decode'
-import { useNavigate } from 'react-router-dom'
 import {
-    apiUsersGetInfo, apiConversationsGetConversation, apiConversationsCreateConversation,
+    apiConversationsGetConversation, apiConversationsCreateConversation,
     apiMessagesGetAllMessages, apiMessagesSendMessage
 } from '../services'
 import { useGlobalState } from '../hooks'
+import { socket } from '../utils'
 
 export default function Conversation() {
     const [state, dispatch] = useGlobalState()
+    const [fetchAgain, setFetchAgain] = useState(false)
     const [hide, setHide] = useState(false)
     const [user, setUser] = useState({})
     const [idConversation, setIdConversation] = useState()
@@ -16,16 +17,7 @@ export default function Conversation() {
     const token = JSON.parse(window.localStorage.getItem('token'))
     const userInfo = jwtDecode(token)
     const messageInputRef = useRef()
-    const navigate = useNavigate()
-
-    const getInfoUser = useCallback(async () => {
-        try {
-            const res = await apiUsersGetInfo(state.userConversation.username)
-            setUser(res.data.user)
-        } catch (error) {
-            navigate(state.userConversation.username)
-        }
-    }, [state.userConversation?.username, navigate])
+    const messageRef = useRef()
 
     const getConversation = useCallback(async () => {
         try {
@@ -53,13 +45,17 @@ export default function Conversation() {
     }, [idConversation])
 
     useEffect(() => {
+        if (state.fetchAgain !== fetchAgain) {
+            setFetchAgain(state.fetchAgain)
+        }
+
         if (state.userConversation) {
-            getInfoUser()
+            setUser(state.userConversation)
             getConversation()
             getAllMessages()
         }
 
-    }, [state.userConversation, getInfoUser, getConversation, getAllMessages])
+    }, [state.userConversation, state.fetchAgain, fetchAgain, getConversation, getAllMessages])
 
     const handleSendMessage = async (e) => {
         e.preventDefault()
@@ -69,6 +65,8 @@ export default function Conversation() {
             sender: userInfo.id,
             receiver: state.userConversation.id
         })
+        await dispatch({ fetchAgain: !state.fetchAgain })
+        await socket.emit('request-friend', user.username)
         await getAllMessages()
         messageInputRef.current.value = ''
     }
@@ -89,11 +87,14 @@ export default function Conversation() {
                 </span>
             </div>
             <div className='conversation-body'>
-                {messages.map((item, index) =>
-                    <div key={index} style={{ fontSize: 15 }} className={item.sender === userInfo.username ? 'text-end ms-5' : 'me-5'}>
+                {messages.map((item, index) => {
+                    messageRef.current.scrollIntoView({ behavior: 'smooth' })
+                    return <div key={index} style={{ fontSize: 15 }} className={item.sender === userInfo.id ? 'text-end ms-5' : 'me-5'}>
                         {item.content}
                     </div>
+                }
                 )}
+                <div className='pt-4' ref={messageRef}></div>
             </div>
             <form onSubmit={handleSendMessage} className="conversation-footer input-group">
                 <input ref={messageInputRef} required autoComplete='off' type="text" className="form-control" placeholder='Say something...' />
