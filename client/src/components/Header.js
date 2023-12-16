@@ -3,7 +3,10 @@ import { Link, useNavigate } from 'react-router-dom'
 import { jwtDecode } from 'jwt-decode'
 import moment from 'moment'
 import { useGlobalState } from '../hooks'
-import { apiFriendsGetListRequests, apiFriendsAcceptRequest, apiFriendsDeleteFriend } from '../services'
+import {
+    apiFriendsGetListRequests, apiFriendsAcceptRequest, apiFriendsDeleteFriend,
+    apiConversationsGetAllConversations
+} from '../services'
 import { path, socket, alertMessage } from '../utils'
 import SearchUser from './SearchUser'
 
@@ -11,6 +14,7 @@ export default function Header() {
     const [state, dispatch] = useGlobalState()
     const [fetchAgain, setFetchAgain] = useState(false)
     const [listFriends, setListFriends] = useState([])
+    const [conversations, setConversations] = useState([])
     const token = JSON.parse(window.localStorage.getItem('token'))
     const userInfo = jwtDecode(token)
     const navigate = useNavigate()
@@ -36,15 +40,21 @@ export default function Header() {
 
         const fetchApi = async () => {
             try {
-                const res = await apiFriendsGetListRequests(userInfo.username)
-                setListFriends(res.data.friends.reverse())
+                const resListFriends = await apiFriendsGetListRequests(userInfo.username)
+                setListFriends(resListFriends.data.friends.reverse())
+                const resConversations = await apiConversationsGetAllConversations(userInfo.id)
+                setConversations(
+                    resConversations.data.conversations
+                        .filter(item => item.latestMessage)
+                        .sort((a, b) => Date.parse(b.latestMessage.createAt) - Date.parse(a.latestMessage.createAt))
+                )
             } catch (error) {
                 console.log(error)
             }
         }
 
         fetchApi()
-    }, [userInfo.username, state.fetchAgain, fetchAgain])
+    }, [userInfo.username, userInfo.id, state.fetchAgain, fetchAgain])
 
     const handleAcceptRequest = async (e, id, friendUsername) => {
         e.stopPropagation()
@@ -120,7 +130,7 @@ export default function Header() {
                                         <Link to={`${path.PROFILE}/${item.username}`}>
                                             <img src={item.image ? item.image : "/img/no-avatar.png"} alt="Profile" className="rounded-circle img-in-notify" />
                                         </Link>
-                                        <div className='ms-4'>
+                                        <div className='ms-2'>
                                             <h4>{item.firstName} sent you a friend request.</h4>
                                             <p>
                                                 <button onClick={(e) => handleAcceptRequest(e, item.id, item.username)} className='btn btn-primary me-2 py-0 px-3'>Confirm</button>
@@ -147,59 +157,37 @@ export default function Header() {
 
                         <Link className="nav-link nav-icon" to="/" data-bs-toggle="dropdown">
                             <i className="bi bi-chat-left-text"></i>
-                            <span className="badge bg-success badge-number">3</span>
+                            <span className="badge bg-success badge-number">{conversations.length}</span>
                         </Link>
 
-                        <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
+                        <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
                             <li className="dropdown-header">
-                                You have 3 new messages
+                                You have {conversations.length} new messages
                                 <Link to="/"><span className="badge rounded-pill bg-primary p-2 ms-2">View all</span></Link>
                             </li>
                             <li>
                                 <hr className="dropdown-divider" />
                             </li>
 
-                            <li className="message-item">
-                                <Link to="/">
-                                    <img src="/img/messages-1.jpg" alt="" className="rounded-circle" />
-                                    <div>
-                                        <h4>Maria Hudson</h4>
-                                        <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                        <p>4 hrs. ago</p>
-                                    </div>
-                                </Link>
-                            </li>
-                            <li>
-                                <hr className="dropdown-divider" />
-                            </li>
-
-                            <li className="message-item">
-                                <Link to="/">
-                                    <img src="/img/messages-2.jpg" alt="" className="rounded-circle" />
-                                    <div>
-                                        <h4>Anna Nelson</h4>
-                                        <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                        <p>6 hrs. ago</p>
-                                    </div>
-                                </Link>
-                            </li>
-                            <li>
-                                <hr className="dropdown-divider" />
-                            </li>
-
-                            <li className="message-item">
-                                <Link to="/">
-                                    <img src="/img/messages-3.jpg" alt="" className="rounded-circle" />
-                                    <div>
-                                        <h4>David Muldon</h4>
-                                        <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                        <p>8 hrs. ago</p>
-                                    </div>
-                                </Link>
-                            </li>
-                            <li>
-                                <hr className="dropdown-divider" />
-                            </li>
+                            {conversations.map((item, index) => {
+                                return <div key={index}>
+                                    <li className="notification-item align-items-start">
+                                        <Link to={`${path.PROFILE}/${item.username}`}>
+                                            <img src={item.image ? item.image : "/img/no-avatar.png"} alt="Profile" className="rounded-circle img-in-notify" />
+                                        </Link>
+                                        <Link onClick={() => dispatch({ userConversation: item })} className='ms-2'>
+                                            <h4 className='text-black'>{item.firstName + ' ' + item.lastName}</h4>
+                                            <p>{item.latestMessage.content.length > 30
+                                                ? item.latestMessage.content.slice(0, 30) + '...'
+                                                : item.latestMessage.content}</p>
+                                            <p>{moment(item.latestMessage.createAt).fromNow()}</p>
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <hr className="dropdown-divider" />
+                                    </li>
+                                </div>
+                            })}
 
                             <li className="dropdown-footer">
                                 <Link to="/">Show all messages</Link>
