@@ -1,17 +1,24 @@
 const db = require('../config/db')
 
 exports.getAllMessages = (req, res) => {
-    const { id } = req.query
+    const { id, user } = req.query
 
     if (!id)
         return res.status(400).json({ message: `Please complete all information` })
 
     db.query(`SELECT * FROM messages WHERE id = ?`, [id],
-        (error, results) => {
+        async (error, messages) => {
             if (error)
                 return res.status(400).json(error)
 
-            return res.status(200).json({ messages: results })
+            if (messages[messages.length - 1]?.sender !== parseInt(user))
+                await db.query('UPDATE messages SET ? WHERE id = ? AND isRead = 0', [{ isRead: true }, id],
+                    (err, results) => {
+                        if (err)
+                            return res.status(400).json(err)
+                    })
+
+            return res.status(200).json({ messages })
         })
 }
 

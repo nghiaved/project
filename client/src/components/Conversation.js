@@ -35,14 +35,14 @@ export default function Conversation() {
 
     const getAllMessages = useCallback(async () => {
         try {
-            const res = await apiMessagesGetAllMessages(idConversation)
+            const res = await apiMessagesGetAllMessages(idConversation, userInfo.id)
             if (res.data.messages) {
                 setMessages(res.data.messages)
             }
         } catch (error) {
             console.log(error)
         }
-    }, [idConversation])
+    }, [idConversation, userInfo.id])
 
     useEffect(() => {
         if (state.fetchAgain !== fetchAgain) {

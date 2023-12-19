@@ -33,8 +33,12 @@ export default function Header() {
         navigate(0)
     }
 
+    const messNotify = conversations.reduce((total, item) => {
+        return item.latestMessage.isRead || item.latestMessage.sender === userInfo.id ? total : ++total
+    }, 0)
+
     useEffect(() => {
-        if (state.fetchAgain !== fetchAgain) {
+        if (state.fetchAgain !== fetchAgain || state.userConversation) {
             setFetchAgain(state.fetchAgain)
         }
 
@@ -54,7 +58,7 @@ export default function Header() {
         }
 
         fetchApi()
-    }, [userInfo.username, userInfo.id, state.fetchAgain, fetchAgain])
+    }, [userInfo.username, userInfo.id, state.fetchAgain, fetchAgain, state.userConversation])
 
     const handleAcceptRequest = async (e, id, friendUsername) => {
         e.stopPropagation()
@@ -157,12 +161,12 @@ export default function Header() {
 
                         <Link className="nav-link nav-icon" to="/" data-bs-toggle="dropdown">
                             <i className="bi bi-chat-left-text"></i>
-                            <span className="badge bg-success badge-number">{conversations.length}</span>
+                            <span className="badge bg-success badge-number">{messNotify}</span>
                         </Link>
 
                         <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
                             <li className="dropdown-header">
-                                You have {conversations.length} new messages
+                                You have {messNotify} new messages
                                 <Link to="/"><span className="badge rounded-pill bg-primary p-2 ms-2">View all</span></Link>
                             </li>
                             <li>
@@ -177,9 +181,10 @@ export default function Header() {
                                         </Link>
                                         <Link onClick={() => dispatch({ userConversation: item })} className='ms-2'>
                                             <h4 className='text-black'>{item.firstName + ' ' + item.lastName}</h4>
-                                            <p>{item.latestMessage.content.length > 30
-                                                ? item.latestMessage.content.slice(0, 30) + '...'
-                                                : item.latestMessage.content}</p>
+                                            <p className={item.latestMessage.isRead || item.latestMessage.sender === userInfo.id ? 'fw-normal' : 'fw-bold'}>
+                                                {item.latestMessage.content.length > 30
+                                                    ? item.latestMessage.content.slice(0, 30) + '...'
+                                                    : item.latestMessage.content}</p>
                                             <p>{moment(item.latestMessage.createAt).fromNow()}</p>
                                         </Link>
                                     </li>
