@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
+import moment from 'moment'
 import { jwtDecode } from 'jwt-decode'
 import {
     apiConversationsGetConversation, apiConversationsCreateConversation,
@@ -74,9 +75,16 @@ export default function Conversation() {
     return (
         <div className="conversation-wrapper" style={state.userConversation ? hide ? { right: '20px', height: 50, overflow: 'hidden' } : { right: '20px' } : {}}>
             <div className='conversation-header bg-secondary text-white'>
-                <span>
-                    <img src={user.image ? user.image : "/img/no-avatar.png"} alt="Profile" className="rounded-circle" />
-                    <span>{user.firstName + ' ' + user.lastName}</span>
+                <span className='d-flex align-items-center'>
+                    <img src={user.image ? user.image : "/img/no-avatar.png"} alt="Profile" className="rounded-circle border" />
+                    <div>
+                        <span>{user.firstName + ' ' + user.lastName}</span>
+                        <div style={{ fontSize: 12 }}>
+                            {state.userConversation?.lastActive
+                                ? moment(state.userConversation?.lastActive).fromNow()
+                                : 'Online'}
+                        </div>
+                    </div>
                 </span>
                 <span>
                     <i onClick={() => setHide(!hide)} className={hide ? "bi bi-plus-lg me-3" : "bi bi-dash-lg me-3"}></i>
@@ -86,7 +94,7 @@ export default function Conversation() {
                     }} className="bi bi-x-lg nav-icon"></i>
                 </span>
             </div>
-            <div className='conversation-body'>
+            <div className={hide ? 'conversation-body d-none' : 'conversation-body'}>
                 {messages.map((item, index) => {
                     messageRef.current.scrollIntoView({ behavior: 'smooth' })
                     return <div key={index} style={{ fontSize: 15 }} className={item.sender === userInfo.id ? 'text-end ms-5' : 'me-5'}>
@@ -96,7 +104,7 @@ export default function Conversation() {
                 )}
                 <div className='pt-4' ref={messageRef}></div>
             </div>
-            <form onSubmit={handleSendMessage} className="conversation-footer input-group">
+            <form onSubmit={handleSendMessage} className={hide ? "conversation-footer input-group d-none" : "conversation-footer input-group"}>
                 <input ref={messageInputRef} required autoComplete='off' type="text" className="form-control" placeholder='Say something...' />
                 <button className="input-group-text">Send</button>
             </form>

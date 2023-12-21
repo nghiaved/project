@@ -38,18 +38,19 @@ const io = new Server(server, {
 })
 
 io.on('connection', (socket) => {
-    console.log(`User Connected: ${socket.id}`)
-
     socket.on('join-username', (username) => {
         socket.join(username)
+        db.query('UPDATE users SET ? WHERE username = ?', [{ online: true, lastActive: null }, username])
+        io.emit('user-online', username)
+
+        socket.on('disconnect', () => {
+            db.query('UPDATE users SET ? WHERE username = ?', [{ online: false, lastActive: new Date() }, username])
+            io.emit('user-offline', username)
+        })
     })
 
     socket.on('request-friend', (username) => {
         io.to(username).emit('receive-username', username)
-    })
-
-    socket.on('disconnect', () => {
-        console.log(`User Disconnected: ${socket.id}`)
     })
 })
 

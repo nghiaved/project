@@ -29,6 +29,7 @@ export default function Header() {
     }
 
     const handleLogout = () => {
+        socket.disconnect()
         window.localStorage.removeItem('token')
         navigate(0)
     }
@@ -114,7 +115,7 @@ export default function Header() {
 
                         <Link className="nav-link nav-icon" to="/" data-bs-toggle="dropdown">
                             <i className="bi bi-bell"></i>
-                            <span className="badge bg-primary badge-number">{listFriends.length}</span>
+                            {listFriends.length > 0 && <span className="badge bg-primary badge-number">{listFriends.length}</span>}
                         </Link>
 
                         <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
@@ -161,7 +162,7 @@ export default function Header() {
 
                         <Link className="nav-link nav-icon" to="/" data-bs-toggle="dropdown">
                             <i className="bi bi-chat-left-text"></i>
-                            <span className="badge bg-success badge-number">{messNotify}</span>
+                            {messNotify > 0 && <span className="badge bg-success badge-number">{messNotify}</span>}
                         </Link>
 
                         <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
