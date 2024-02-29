@@ -54,6 +54,36 @@ exports.getAllMyPosts = (req, res) => {
     )
 }
 
+exports.getAllPosts = (req, res) => {
+    const { page, limit } = req.query
+
+    if (!page || !limit)
+        return res.status(400).json({ message: `Please complete all information` })
+
+    db.query('SELECT count(*) FROM posts',
+        async (error, results) => {
+            if (error)
+                return res.status(400).json(error)
+
+            if (results) {
+                const totalData = results[0]['count(*)']
+                const totalPage = Math.ceil(totalData / limit)
+
+                db.query('SELECT * FROM posts ORDER BY createAt DESC LIMIT ? OFFSET ?',
+                    [+limit, +((page - 1) * limit)],
+                    async (error, results) => {
+                        if (error)
+                            return res.status(400).json(error)
+
+                        if (results)
+                            return res.status(200).json({ totalData, totalPage, page, limit, posts: results })
+                    }
+                )
+            }
+        }
+    )
+}
+
 exports.updatePost = (req, res) => {
     const { id } = req.body
     const image = req.files?.image
